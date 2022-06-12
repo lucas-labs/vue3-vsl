@@ -1,12 +1,12 @@
 <template>
-    <div ref="element" role="listitem">
-        <slot :item="source" :id="uniqueKey" />
+    <div ref="element" role="list-item" :id="uniqueKey + ''" style="overflow: auto;">
+        <slot :item="source"  />
     </div>
 </template>
 
 <script setup lang="ts">
     import { ref } from 'vue';
-    import type { AFunction, AnObject } from '@/common/types';
+    import { EventType, type AnObject } from '@/common/types';
     import { useSizeChange, type SizeChangeEmitCallback } from './wrapper.composable';
     import type { ItemIdType } from '@/common/types';
     
@@ -15,26 +15,19 @@
     type ItemProps = {
         horizontal: boolean;
         uniqueKey: ItemIdType;
-        index?: number;
-        tag?: string;
         source?: AnObject;
-        component?: AnObject | AFunction;
-        slotComponent?: AFunction;
-        extraProps?: AnObject;
-        scopedSlots?: AnObject;
     }
 
     const props = defineProps<ItemProps>();
     const emit = defineEmits(['sizeChanged'])
 
-    const emitSizeChanged: SizeChangeEmitCallback = (key, size) => {
-        emit('sizeChanged', key, size);
+    const emitSizeChanged: SizeChangeEmitCallback = (size) => {
+        emit('sizeChanged', props.uniqueKey, size, EventType.ITEM);
     }
 
     useSizeChange(
         element,
         props.horizontal,
-        props.uniqueKey,
         emitSizeChanged
     );
 </script>

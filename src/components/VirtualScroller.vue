@@ -1,96 +1,104 @@
 <template>
-    <div ref="element" role="container" @scroll="onScroll">
-        <ScrollerSlot :unique-key="SLOT_TYPE.HEADER" :horizontal="isHorizontal">
+    <div ref="element" role="list-container" @scroll="onScroll" :class="$props.class">
+        <ScrollerSlot
+            :unique-key="SlotType.HEADER"
+            :horizontal="isHorizontal"
+            @size-changed="onSlotResize"
+        >
             <template #content v-if="$slots.header">
                 <slot name="header"></slot>
             </template>
         </ScrollerSlot>
 
-        <!-- <slot :item="'item lacop'"></slot> -->
-        <div role="group" :style="{
-            padding: isHorizontal ? `0px ${range.padBehind}px 0px ${range.padFront}px` : `${range.padFront}px 0px ${range.padBehind}px`
-        }">
-            <div
-                v-for="(n, i) in (range.end - range.start + 1)"
+        <div
+            role="group"
+            :style="{
+                padding: isHorizontal
+                    ? `0px ${range.padBehind}px 0px ${range.padFront}px`
+                    : `${range.padFront}px 0px ${range.padBehind}px`
+            }"
+        >
+            <ScrollerItem
+                v-for="(n, i) in range.end - range.start + 1"
                 :key="i"
+                :horizontal="isHorizontal"
+                :uniqueKey="
+                    typeof dataKey === 'function'
+                        ? dataKey(dataSources[range.start + i])
+                        : dataSources[range.start + i][dataKey]
+                "
+                :source="dataSources[range.start + i]"
+                @size-changed="onChildResize"
             >
-                {{dataSources[range.start + i].id}} - {{dataSources[range.start + i].username}}
-
-            </div>
+                <slot :item="dataSources[range.start + i]" :index="range.start + i"></slot>
+            </ScrollerItem>
         </div>
-        <!-- <render-list></render-list> -->
-        
-        <ScrollerSlot :unique-key="SLOT_TYPE.FOOTER" :horizontal="isHorizontal">
+
+        <ScrollerSlot :unique-key="SlotType.FOOTER" :horizontal="isHorizontal">
             <template #content v-if="$slots.footer">
                 <slot name="footer"></slot>
             </template>
         </ScrollerSlot>
+
+        <div
+            ref="shepherd"
+            :style="{
+                width: isHorizontal ? '0px' : '100%',
+                height: isHorizontal ? '100%' : '0px'
+            }"
+        ></div>
     </div>
 </template>
 
-<script setup lang="ts" >
+<script setup lang="ts">
     import {
-        EVENT_TYPE,
-        SLOT_TYPE,
-        type AFunction,
-        type AnObject,
-        type DataComponentFunction,
+        SlotType,
         type DataKeyFunction,
         type ItemIdType,
         type ScrollingDirection,
         type VirtualListRange
     } from '@/common/types';
+    import { VirtualListManager } from '@/common/virtual';
+    import { onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue';
     import ScrollerItem from './ScrollerItem.vue';
     import ScrollerSlot from './ScrollerSlot.vue';
-    import { h, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, useSlots } from 'vue';
-    import { VirtualListManager } from '@/common/virtual';
-    
 
     type VirtualScrollerProps = {
-        dataKey: string | DataKeyFunction;
+        /**
+         * The data source for the virtual list.
+         * An array containing the data to be displayed.
+         */
         dataSources: any[];
-        dataComponent: AnObject | DataComponentFunction;
-        /** Defaults to 30 */
+        dataKey: string | DataKeyFunction;
+        /** Number of items rendered at once. *Defaults to `30`* */
         keeps?: number;
-        extraProps?: AnObject;
-        /** Defaults to 50 */
-        estimateSize?: number;
-        /** Defaults to vertical */
+        /** Individual items estimated size. *Defaults to `50` (px)* */
+        estimatedSize?: number;
+        /**
+         * Direction of the scroller.
+         * **Options** `vertical` | `horizontal`.
+         * *Defaults to `vertical`*
+         */
         direction?: ScrollingDirection;
-        /** Defaults to 0 */
+        /** Starting item position. *Defaults to `0` (starts on top)* */
         start?: number;
-        /** Defaults to 0 */
+        /**
+         * Starting offset position (jumps n elements).
+         * Use this or `start`, not both.
+         * *Defaults to `0` (jumps 0 elements: starts on top)*
+         */
         offset?: number;
-        /** Defaults to 0 */
+        /** *Defaults to `0`* */
         topThreshold?: number;
-        /** Defaults to 0 */
+        /** *Defaults to `0`* */
         bottomThreshold?: number;
-        /** Defaults to false */
+        /** Page Mode. *Defaults to `false`* */
         pageMode?: boolean;
-        /** Defaults to div */
-        rootTag?: string;
-        /** Defaults to div */
-        wrapTag?: string;
-        /** Defaults to '' */
-        wrapClass?: string;
-        wrapStyle?: AnObject;
-        /** Defaults to div */
-        itemTag?: string;
-        /** Defaults to '' */
-        itemClass?: string;
-        itemClassAdd?: AFunction;
-        itemStyle?: AnObject;
-        /** Defaults to div */
-        headerTag?: string;
-        /** Defaults to '' */
-        headerClass?: string;
-        headerStyle?: AnObject;
-        /** Defaults to div */
-        footerTag?: string;
-        /** Defaults to '' */
-        footerClass?: string;
-        footerStyle?: AnObject;
-        itemScopedSlots?: AnObject;
+
+        /*
+         * Class list or object
+         */
+        class?: string | Record<string, boolean>;
     };
 
     const element = ref<HTMLElement>();
@@ -98,25 +106,14 @@
 
     const props = withDefaults(defineProps<VirtualScrollerProps>(), {
         keeps: 30,
-        estimateSize: 18,
+        estimatedSize: 50,
         direction: 'vertical',
         start: 0,
         offset: 0,
         topThreshold: 0,
         bottomThreshold: 0,
-        pageMode: false,
-        rootTag: 'div',
-        wrapTag: 'div',
-        wrapClass: '',
-        itemTag: 'div',
-        itemClass: '',
-        headerTag: 'div',
-        headerClass: '',
-        footerTag: 'div',
-        footerClass: ''
+        pageMode: false
     });
-
-    const scopedSlots = useSlots();
 
     const emit = defineEmits(['resized', 'scroll', 'totop', 'tobottom']);
 
@@ -128,18 +125,49 @@
     let range = ref<VirtualListRange>();
 
     /*
+        Watchers
+    */
+    watch(
+        () => props.dataSources.length,
+        () => {
+            virtual.updateParam('uniqueIds', getUniqueIdFromDataSources());
+            virtual.handleDataSourcesChange();
+        }
+    );
+
+    watch(
+        () => props.keeps,
+        () => {
+            virtual.updateParam('keeps', props.keeps);
+            virtual.handleDataSourcesChange();
+        }
+    );
+
+    watch(
+        () => props.keeps,
+        () => {
+            virtual.updateParam('keeps', props.keeps);
+            virtual.handleDataSourcesChange();
+        }
+    );
+
+    watch(
+        () => props.start,
+        (newValue) => {
+            scrollToIndex(newValue);
+        }
+    );
+
+    watch(
+        () => props.offset,
+        (newValue) => {
+            scrollToOffset(newValue);
+        }
+    );
+
+    /*
         Methods
     */
-
-    /** returns the size of an item by id */
-    const getSize = (id: ItemIdType) => {
-        return virtual?.sizes.get(id);
-    };
-
-    /** returns the total number of stored (rendered) items */
-    const getSizes = () => {
-        return virtual.sizes.size;
-    };
 
     /** returns current scroll offset */
     const getOffset = () => {
@@ -225,29 +253,17 @@
         }
     };
 
-    /** reset all state back to initial */
-    const reset = () => {
-        virtual.reset();
-        scrollToOffset(0);
-        installVirtual();
-    };
-
     /** event called when each item mounted or size changed */
-    const onItemResized = (id: ItemIdType, size: number) => {
+    const onChildResize = (id: ItemIdType, size: number) => {
         virtual.saveSize(id, size);
         emit('resized', id, size);
     };
 
-    /** event called when slot mounted or size changed */
-    const onSlotResized = (type: string, size: number, hasInit: boolean) => {
-        if (type === SLOT_TYPE.HEADER) {
+    const onSlotResize = (id: ItemIdType, size: number) => {
+        if (id === SlotType.HEADER) {
             virtual.updateParam('slotHeaderSize', size);
-        } else if (type === SLOT_TYPE.FOOTER) {
+        } else if (id === SlotType.FOOTER) {
             virtual.updateParam('slotFooterSize', size);
-        }
-
-        if (hasInit) {
-            virtual.handleSlotSizeChange();
         }
     };
 
@@ -259,8 +275,6 @@
         const offset = getOffset();
         const clientSize = getClientSize();
         const scrollSize = getScrollSize();
-
-        
 
         // iOS scroll-spring-back behavior will make direction mistake
         if (offset < 0 || offset + clientSize > scrollSize + 1 || !scrollSize) {
@@ -294,19 +308,9 @@
         }
     };
 
-    // this.$on(EVENT_TYPE.ITEM, this.onItemResized)
-
-    // // listen slot size change
-    // if (this.$slots.header || this.$slots.footer) {
-    //     this.$on(EVENT_TYPE.SLOT, this.onSlotResized)
-    // }
     /*
         Lifecycle hooks
     */
-
-
-    
-
     onActivated(() => {
         scrollToOffset(virtual.offset);
 
@@ -340,8 +344,7 @@
     });
 
     onBeforeUnmount(() => {
-        console.log(virtual);
-        virtual.reset(); 
+        virtual.reset();
 
         if (props.pageMode) {
             document.removeEventListener('scroll', onScroll);
@@ -362,7 +365,7 @@
                 slotHeaderSize: 0,
                 slotFooterSize: 0,
                 keeps: props.keeps,
-                estimateSize: props.estimateSize,
+                estimatedSize: props.estimatedSize,
                 buffer: Math.round(props.keeps / 3), // recommend for a third of keeps
                 uniqueIds: getUniqueIdFromDataSources()
             },
@@ -374,64 +377,10 @@
     };
 
     installVirtual();
-
-    const renderItems = () => {
-        const slots = []
-        const { start, end } = range.value;
-        const slotComponent = scopedSlots && scopedSlots.item;
-
-        for (let index = start; index <= end; index++) {
-            const dataSource = props.dataSources[index]
-            if (dataSource) {
-                const uniqueKey = typeof props.dataKey === 'function' ? props.dataKey(dataSource) : dataSource[props.dataKey]
-                if (typeof uniqueKey === 'string' || typeof uniqueKey === 'number') {
-                    slots.push(
-                        h(ScrollerItem, {
-                            index,
-                            tag: props.itemTag,
-                            event: EVENT_TYPE.ITEM,
-                            horizontal: isHorizontal.value,
-                            uniqueKey: uniqueKey,
-                            source: dataSource,
-                            extraProps: props.extraProps,
-                            component: props.dataComponent,
-                            slotComponent: slotComponent,
-                            scopedSlots: props.itemScopedSlots,
-                            style: props.itemStyle,
-                            class: `${props.itemClass}${props.itemClassAdd ? ' ' + props.itemClassAdd(index) : ''}`
-                        }, scopedSlots.default)
-                    )
-                } else {
-                    console.warn(`Cannot get the data-key '${props.dataKey}' from data-sources.`)
-                }
-            } else {
-                console.warn(`Cannot get the index '${index}' from data-sources.`)
-            }
-        }
-
-        return slots;
-    }
-
-    const renderList = () => {
-        console.log('----------------------------------------------------------> rendering');
-        const paddingStyle = { padding: isHorizontal.value ? `0px ${range.value.padBehind}px 0px ${range.value.padFront}px` : `${range.value.padFront}px 0px ${range.value.padBehind}px`}
-        const wrapperStyle = props.wrapStyle ? Object.assign({}, props.wrapStyle, paddingStyle) : paddingStyle
-
-        return h(props.wrapTag, {
-            on: {
-                '&scroll': !props.pageMode && onScroll
-            },
-            class: props.wrapClass,
-            attrs: {
-                role: 'group'
-            },
-            style: wrapperStyle
-        }, renderItems())
-    }
 </script>
 
 <style scoped lang="css">
-    [role="container"] {
+    [role='list-container'] {
         height: 300px;
         overflow: auto;
         background-color: rgb(235, 239, 255);

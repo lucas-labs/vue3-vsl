@@ -79,13 +79,17 @@ export class VirtualListManager {
                     }
                 });
             }
+
             this.param[key as keyof VirtualOptions] = value as any;
+
+            if(key === 'slotHeaderSize') {
+                this.handleSlotSizeChange();
+            }
         }
     }
 
     // save each size map by id
     saveSize(id: ItemIdType, size: number) {
-        this.updateParam('uniqueIds', []);
         this.sizes.set(id, size);
 
         // we assume size type is fixed at the beginning and remember first size value
@@ -133,7 +137,7 @@ export class VirtualListManager {
 
     // when slot size change, we also need force update
     handleSlotSizeChange() {
-        this.handleDataSourcesChange();
+        // this.handleDataSourcesChange();
     }
 
     // calculating range on scroll
@@ -157,7 +161,6 @@ export class VirtualListManager {
     handleFront() {
         const overs = this.getScrollOvers();
 
-        console.log('handleFront', overs, this.range.start, overs > this.range.start);
         // should not change range if start doesn't exceed overs
         if (overs > this.range.start) {
             return;
@@ -171,7 +174,6 @@ export class VirtualListManager {
     handleBehind() {
         const overs = this.getScrollOvers();
         
-        console.log('handleBehind', overs, this.range.start, overs < this.range.start + this.param.buffer);
         // range should not change if scroll overs within buffer
         if (overs < this.range.start + this.param.buffer) {
             return;
@@ -231,13 +233,13 @@ export class VirtualListManager {
         for (let index = 0; index < givenIndex; index++) {
             indexSize = this.sizes.get(this.param.uniqueIds[index]);
             offset =
-                offset + (typeof indexSize === 'number' ? indexSize : this.getEstimateSize());
+                offset + (typeof indexSize === 'number' ? indexSize : this.getEstimatedSize());
         }
 
         // remember last calculate index
         this.lastCalcIndex = Math.max(this.lastCalcIndex, givenIndex - 1);
         this.lastCalcIndex = Math.min(this.lastCalcIndex, this.getLastIndex());
-
+        
         return offset;
     }
 
@@ -273,7 +275,6 @@ export class VirtualListManager {
 
     // setting to a new range and rerender
     updateRange(start: number, end: number) {
-        console.log('update range', start, end);
         this.range.start = start;
         this.range.end = end;
         this.range.padFront = this.getPadFront();
@@ -311,14 +312,14 @@ export class VirtualListManager {
             return this.getIndexOffset(lastIndex) - this.getIndexOffset(end);
         } else {
             // if not, use a estimated value
-            return (lastIndex - end) * this.getEstimateSize();
+            return (lastIndex - end) * this.getEstimatedSize();
         }
     }
 
     // get the item estimate size
-    getEstimateSize() {
+    getEstimatedSize() {
         return this.isFixedType()
             ? this.fixedSizeValue
-            : this.firstRangeAverageSize || this.param.estimateSize;
+            : this.firstRangeAverageSize || this.param.estimatedSize;
     }
 }

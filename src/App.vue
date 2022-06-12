@@ -1,14 +1,19 @@
 <template>
     <header>hello!</header>
 
-    <virtual-scroller :data-key="'id'" :data-sources="users" :data-component="null" >
-        <template v-slot="{item}">
-            #{{item.id}} - {{item.username}}
+    <virtual-scroller :data-key="'id'" :data-sources="users" @tobottom="bottom">
+        <template #header>
+            <div style="height: 120px; background-color: aquamarine;">
+                heada
+            </div>
+            
         </template>
 
-        <!-- <template #header>
-            heada
-        </template> -->
+        <template v-slot="{item, index}">
+            <div style="min-height: 66px; margin: 8px; background-color: azure;">
+                #{{index}} - {{item.id}} - {{item.username}}
+            </div>
+        </template>
 
         <!-- <template #footer>
             foota
@@ -21,17 +26,19 @@
     import VirtualScroller from './components/VirtualScroller.vue';
     import { generateUsername, generateUniqueId } from './demo/common/utils';
 
-    const users = ref<{ id: number, username: string }[]>([]);
+    const users = ref<{ id: number | string, username: string }[]>([]);
 
     const createUsers = (size: number) => {
         for(let i = 0; i < size; i++) {
             users.value.push({
-                id: i,
+                id: generateUniqueId('usr'),
                 username: generateUsername()
             });
         }
+    }
 
-        console.log(users.value); 
+    const bottom = () => {
+        console.log('bottom!')
     }
 
     createUsers(3000);
