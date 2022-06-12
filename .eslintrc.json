@@ -14,7 +14,7 @@
             "extends": ["plugin:cypress/recommended"]
         },
         {
-            "files": ["*.ts", "*.tsx"],
+            "files": ["*.ts", "*.tsx", "*.vue"],
             "rules": {
                 "@typescript-eslint/no-explicit-any": "off"
             }
