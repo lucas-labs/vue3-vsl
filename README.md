@@ -84,3 +84,7 @@ const app = createApp(App);
 app.use(VirtualScrollerPlugin);
 app.mount('#app');
 ```
+
+# TODO
+
+- [ ] Add tests!
