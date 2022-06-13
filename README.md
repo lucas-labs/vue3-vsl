@@ -2,7 +2,7 @@
 
 <p align="center">
 <strong>
-🔎 <code>@lucas-labs/vue3-virtual-scroll-list</code> is a Vuejs 3 component plugin. Heavily based on <a href="https://github.com/tangbc/vue-virtual-scroll-list">tangbc/vue-virtual-scroll-list</a>. Basically the same but "translated" to Vuejs 3 and Composition API.
+🔎 <code>@lucas-labs/vue3-virtual-scroll-list</code> is a Vuejs 3 component plugin. Heavily based on <a href="https://github.com/tangbc/vue-virtual-scroll-list">tangbc/vue-virtual-scroll-list</a>. Basically the same but ported to Vuejs 3 + typescript + Composition API.
 </strong>
 </p>
 
