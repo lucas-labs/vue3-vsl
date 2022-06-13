@@ -381,9 +381,6 @@
 
 <style scoped lang="css">
     [role='list-container'] {
-        height: 300px;
         overflow: auto;
-        background-color: rgb(235, 239, 255);
-        border: solid 2px midnightblue;
     }
 </style>

@@ -1,6 +1,37 @@
 {
-    "name": "@lucas-labs/vue-virtual-scroll-list",
+    "name": "@lucas-labs/vue3-vsl",
     "version": "0.0.1",
+    "description": "Vuejs 3 virtual Scroll List Component",
+    "type": "module",
+    "exports": {
+        ".": "./dist/index.js",
+        "./styles": "./dist/style.css"
+    },
+    "browser": {
+        ".": "./dist/index.js",
+        "./styles": "./dist/style.css"
+    },
+    "types": "./dist/vsl-plugin.d.ts",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lucas-labs/vue3-vsl"
+    },
+    "keywords": [
+        "vue",
+        "vue3",
+        "vuejs",
+        "vuejs3",
+        "scroller",
+        "infinite-scroll"
+    ],
+    "author": "Lucas Colombo",
+    "bugs": {
+        "url": "https://github.com/lucas-labs/vue3-vsl/issues"
+    },
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "dev": "vite",
         "build": "run-p type-check build-only",
@@ -12,7 +43,7 @@
         "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
     },
-    "dependencies": {
+    "peerDependencies": {
         "vue": "^3.2.36"
     },
     "devDependencies": {
@@ -31,9 +62,11 @@
         "jsdom": "^19.0.0",
         "npm-run-all": "^4.1.5",
         "prettier": "^2.5.1",
+        "rollup-plugin-typescript2": "^0.32.1",
         "start-server-and-test": "^1.14.0",
         "typescript": "~4.7.2",
         "vite": "^2.9.9",
+        "vue": "^3.2.36",
         "vitest": "^0.13.0",
         "vue-tsc": "^0.35.2"
     }

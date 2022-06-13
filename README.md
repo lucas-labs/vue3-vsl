@@ -10,17 +10,17 @@
 
 ### npm
 ```bash
-npm i @lucas-labs/vue3-virtual-scroll-list
+npm i @lucas-labs/vue3-vsl
 ```
 
 ### pnpm
 ```bash
-pnpm i @lucas-labs/vue3-virtual-scroll-list
+pnpm i @lucas-labs/vue3-vsl
 ```
 
 ### yarn
 ```bash
-yarn add @lucas-labs/vue3-virtual-scroll-list
+yarn add @lucas-labs/vue3-vsl
 ```
 
 ## Usage
