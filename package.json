@@ -46,6 +46,9 @@
     "peerDependencies": {
         "vue": "^3.2.36"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "devDependencies": {
         "@rushstack/eslint-patch": "^1.1.0",
         "@types/jsdom": "^16.2.14",
