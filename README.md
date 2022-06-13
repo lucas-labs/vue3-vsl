@@ -2,7 +2,7 @@
 
 <p align="center">
 <strong>
-🔎 <code>@lucas-labs/vue3-virtual-scroll-list</code> is a Vuejs 3 component plugin. Heavily based on <a href="https://github.com/tangbc/vue-virtual-scroll-list">tangbc/vue-virtual-scroll-list</a>. Basically the same but ported to Vuejs 3 + typescript + Composition API.
+🔎 <code>@lucas-labs/vue3-vsl</code> (virtual-scroll-list) is a Vuejs 3 component plugin. Heavily based on <a href="https://github.com/tangbc/vue-virtual-scroll-list">tangbc/vue-virtual-scroll-list</a>. Basically the same but ported to Vuejs 3 + typescript + Composition API.
 </strong>
 </p>
 
@@ -65,4 +65,22 @@ yarn add @lucas-labs/vue3-virtual-scroll-list
 
     fetchUsers();
 </script>
+```
+
+### Use globally
+
+```typescript
+// main.ts/main.js
+import { createApp } from 'vue'
+import App from './App.vue'
+
+// import the plugin
+import VirtualScrollerPlugin from '@lucas-labs/vue3-vsl';
+
+const app = createApp(App);
+
+// use the plugin to make it 
+// available in all your components
+app.use(VirtualScrollerPlugin);
+app.mount('#app');
 ```

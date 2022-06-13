@@ -4,7 +4,7 @@
     <virtual-scroller :data-key="'id'" :data-sources="users" @tobottom="bottom">
         <template #header>
             <div style="height: 120px; background-color: aquamarine;">
-                heada
+                header
             </div>
             
         </template>
@@ -14,10 +14,6 @@
                 #{{index}} - {{item.id}} - {{item.username}}
             </div>
         </template>
-
-        <!-- <template #footer>
-            foota
-        </template> -->
     </virtual-scroller>
 </template>
 
