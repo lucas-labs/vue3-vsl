@@ -49,7 +49,7 @@ yarn add @lucas-labs/vue3-vsl
 
 <script setup lang="ts">
     import { ref } from 'vue';
-    import VirtualScroller from './components/VirtualScroller.vue';
+    import { VirtualScroller } from '@lucas-labs/vue3-vsl';
 
     const users = ref<{ id: number | string; username: string }[]>([]);
 
