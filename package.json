@@ -1,6 +1,6 @@
 {
     "name": "@lucas-labs/vue3-vsl",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Vuejs 3 virtual Scroll List Component",
     "type": "module",
     "exports": {
