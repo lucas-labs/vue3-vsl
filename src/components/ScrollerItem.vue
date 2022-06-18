@@ -1,5 +1,5 @@
 <template>
-    <div ref="element" role="list-item" :id="uniqueKey + ''" style="overflow: auto;">
+    <div ref="element" role="list-item" :id="uniqueKey + ''">
         <slot :item="source"  />
     </div>
 </template>
@@ -31,7 +31,3 @@
         emitSizeChanged
     );
 </script>
-
-<style scoped lang="scss">
-
-</style>

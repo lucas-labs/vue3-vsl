@@ -1,5 +1,5 @@
 <template>
-    <div ref="element" :role="uniqueKey" v-if="$slots.content" style="overflow: auto;">
+    <div ref="element" :role="uniqueKey" v-if="$slots.content">
         <slot name="content"></slot>
     </div>
 </template>
