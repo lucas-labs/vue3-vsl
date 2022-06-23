@@ -52,11 +52,11 @@
 
 <script setup lang="ts">
     import {
-        SlotType,
-        type DataKeyFunction,
         type ItemIdType,
+        type DataKeyFunction,
         type ScrollingDirection,
-        type VirtualListRange
+        type VirtualListRange,
+        SlotType
     } from '@/common/types';
     import { VirtualListManager } from '@/common/virtual';
     import { onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue';

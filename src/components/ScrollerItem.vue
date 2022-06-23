@@ -6,9 +6,8 @@
 
 <script setup lang="ts">
     import { ref } from 'vue';
-    import { EventType, type AnObject } from '@/common/types';
+    import { EventType, type AnObject, type ItemIdType } from '../common/types';
     import { useSizeChange, type SizeChangeEmitCallback } from './wrapper.composable';
-    import type { ItemIdType } from '@/common/types';
     
     const element = ref<HTMLElement>();
 

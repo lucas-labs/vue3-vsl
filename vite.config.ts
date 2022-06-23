@@ -1,46 +1,30 @@
-import { fileURLToPath, URL } from 'url';
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import typescript2 from 'rollup-plugin-typescript2'
+import dts from 'vite-plugin-dts';
 
 export default defineConfig({
     plugins: [
         vue(),
-        typescript2({
-            check: false,
-            include: ['src/**/*.vue', 'src/**/*.ts'],
-            tsconfigOverride: {
-                compilerOptions: {
-                    sourceMap: true,
-                    declaration: true,
-                    declarationMap: true,
-                }
-            },
-            exclude: [
-                'vite.config.ts', 'main.ts'
-            ],
-        })
+        dts({
+            staticImport: true,
+            insertTypesEntry: true,
+        }),
     ],
+    base: '/',
     build: {
-        cssCodeSplit: false,
+        cssCodeSplit: true,
+        outDir: 'dist',
         lib: {
-            entry: './src/vsl-plugin.ts',
-            formats: ['es', 'cjs'],
-            name: 'vsl-plugin',
-            fileName: format => (format === 'es' ? 'index.js' : 'index.cjs'),
+            entry: resolve(__dirname, 'src/index.ts'),
+            name: 'vue3vsl',
+            formats: ['es'],
+            fileName: 'index.js'
         },
-        rollupOptions: {
-            external: ['vue'],
-            output: {
-                globals: {
-                    vue: 'Vue',
-                }
-            }
-        }
     },
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': resolve(__dirname, 'src')
         }
     }
 });

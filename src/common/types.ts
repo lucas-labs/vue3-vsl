@@ -1,6 +1,6 @@
 export type AnObject = Record<string, unknown>;
-export type DataKeyFunction = (source: any[]) => string;
 export type ScrollingDirection = 'vertical' | 'horizontal';
+export type DataKeyFunction = (source: any[]) => string;
 
 /**
  * - FRONT => scroll up or left
